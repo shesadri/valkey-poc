@@ -12,6 +12,7 @@ A proof-of-concept application demonstrating Valkey (Redis-compatible) cache int
 - **Monitoring**: Grafana dashboards for visualization
 - **Docker Support**: Complete containerization with Docker Compose
 - **Production Ready**: Separate configuration profiles and deployment options
+- **Kotlin DSL**: Gradle build files using Kotlin DSL for type safety and IDE support
 
 ## Architecture
 
@@ -57,8 +58,11 @@ docker-compose ps
 ### 3. Run the Application
 
 ```bash
-# Using Gradle wrapper
+# Using Gradle wrapper (Kotlin DSL)
 ./gradlew run
+
+# Or run with development profile
+./gradlew runLocal
 
 # Or build and run JAR
 ./gradlew shadowJar
@@ -78,6 +82,62 @@ curl http://localhost:8080/api/v1/cache/mykey
 
 # Delete the value
 curl -X DELETE http://localhost:8080/api/v1/cache/mykey
+```
+
+## Kotlin DSL Build Configuration
+
+This project uses **Gradle Kotlin DSL** (`build.gradle.kts`) for enhanced type safety and IDE support:
+
+### Key Benefits
+- **Type Safety**: Compile-time checking of build script syntax
+- **IDE Support**: Full IntelliJ/VS Code autocompletion and refactoring
+- **Refactoring**: Safe renaming and code navigation
+- **Modern Syntax**: Leverages Kotlin language features
+
+### Build Tasks
+
+```bash
+# Standard tasks
+./gradlew build                 # Build the project
+./gradlew test                  # Run unit tests
+./gradlew integrationTest       # Run integration tests
+./gradlew shadowJar             # Create fat JAR
+
+# Custom tasks
+./gradlew runLocal              # Run with development profile
+./gradlew dockerBuild           # Build Docker image
+./gradlew dockerRun             # Build and run Docker container
+
+# Gradle features
+./gradlew --build-cache         # Use build cache
+./gradlew --parallel            # Parallel execution
+./gradlew --continuous test     # Continuous testing
+```
+
+### Build Configuration Highlights
+
+```kotlin
+// Enhanced Java compilation with Micronaut processing
+tasks.named<JavaCompile>("compileJava") {
+    options.compilerArgs.addAll(listOf(
+        "-parameters",
+        "-Amicronaut.processing.group=com.example",
+        "-Amicronaut.processing.module=valkey-poc"
+    ))
+}
+
+// Custom integration test task
+tasks.register<Test>("integrationTest") {
+    useJUnitPlatform {
+        includeTags("integration")
+    }
+}
+
+// Local development task
+tasks.register<JavaExec>("runLocal") {
+    mainClass.set("com.example.Application")
+    jvmArgs = listOf("-Dmicronaut.environments=dev")
+}
 ```
 
 ## API Documentation
@@ -104,7 +164,7 @@ curl -X DELETE http://localhost:8080/api/v1/cache/mykey
 ### Example Usage
 
 ```bash
-# Set a value with TTL (if implemented)
+# Set a value with complex data
 curl -X PUT "http://localhost:8080/api/v1/cache/session:user123" \
   -H "Content-Type: text/plain" \
   -d '{"userId": 123, "sessionId": "abc123", "expires": "2024-12-31T23:59:59Z"}'
@@ -130,7 +190,7 @@ curl "http://localhost:8080/metrics"
 
 2. **Run Application in Dev Mode**:
    ```bash
-   ./gradlew run
+   ./gradlew runLocal
    ```
 
 3. **Access Services**:
@@ -145,6 +205,7 @@ The application uses profile-based configuration:
 
 - **Default Profile** (`application.yml`): Local development
 - **Production Profile** (`application-prod.yml`): Production settings
+- **Test Profile** (`application-test.yml`): Testing environment
 
 #### Environment Variables
 
@@ -154,6 +215,13 @@ The application uses profile-based configuration:
 | `VALKEY_TIMEOUT` | Connection timeout | `30s` |
 | `ZIPKIN_URL` | Zipkin server URL | `http://localhost:9411` |
 | `MICRONAUT_ENVIRONMENTS` | Active profiles | `dev` |
+
+### Development Features
+
+- **Hot Reload**: Use `./gradlew run --continuous` for hot reloading
+- **Debug Mode**: Enhanced logging with development profile
+- **Build Cache**: Enabled for faster builds
+- **Parallel Execution**: Gradle tasks run in parallel where possible
 
 ## Observability & Monitoring
 
@@ -236,6 +304,10 @@ Pre-configured dashboards include:
 
 1. **Build Application Image**:
    ```bash
+   # Using Gradle task
+   ./gradlew dockerBuild
+   
+   # Or manually
    docker build -t valkey-poc:latest .
    ```
 
@@ -356,6 +428,12 @@ redis:
 ./gradlew integrationTest
 ```
 
+### Continuous Testing
+
+```bash
+./gradlew test --continuous
+```
+
 ### Load Testing
 
 Example using `ab` (Apache Bench):
@@ -397,13 +475,16 @@ ab -n 10000 -c 100 "http://localhost:8080/api/v1/cache/key1"
    curl -v http://localhost:8080/health
    ```
 
-3. **Metrics Not Appearing in Prometheus**:
+3. **Gradle Build Issues**:
    ```bash
-   # Check Prometheus targets
-   curl http://localhost:9090/api/v1/targets
+   # Clean and rebuild
+   ./gradlew clean build
    
-   # Verify metrics endpoint
-   curl http://localhost:8080/metrics
+   # Check Gradle daemon
+   ./gradlew --status
+   
+   # Stop daemon if needed
+   ./gradlew --stop
    ```
 
 ### Debugging
@@ -418,13 +499,20 @@ logging:
     io.micronaut: DEBUG
 ```
 
+Or use development logging configuration:
+
+```bash
+./gradlew runLocal
+```
+
 ## Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
 4. Add tests
-5. Submit a pull request
+5. Run `./gradlew check` to verify all tests pass
+6. Submit a pull request
 
 ## License
 
@@ -435,6 +523,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [Micronaut Documentation](https://docs.micronaut.io/)
 - [Valkey Documentation](https://valkey.io/)
 - [Lettuce Redis Client](https://lettuce.io/)
+- [Gradle Kotlin DSL](https://docs.gradle.org/current/userguide/kotlin_dsl.html)
 - [Prometheus Metrics](https://prometheus.io/)
 - [Zipkin Tracing](https://zipkin.io/)
 - [Grafana Dashboards](https://grafana.com/)
