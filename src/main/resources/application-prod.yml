@@ -1,0 +1,15 @@
+redis:
+  uri: ${VALKEY_URL:redis://localhost:6379}
+  timeout: ${VALKEY_TIMEOUT:30s}
+  
+logging:
+  level:
+    com.example: INFO
+    io.lettuce: WARN
+    io.micronaut: WARN
+
+micronaut:
+  tracing:
+    zipkin:
+      http:
+        url: ${ZIPKIN_URL:http://localhost:9411}

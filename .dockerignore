@@ -1,0 +1,11 @@
+.git
+.gitignore
+README.md
+.gradle
+build/
+.idea
+*.iml
+.vscode
+.DS_Store
+target/
+*.log
