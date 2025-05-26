@@ -34,9 +34,11 @@ dependencies {
     implementation("io.micronaut.tracing:micronaut-tracing-brave")
     implementation("io.micronaut.tracing:micronaut-tracing-brave-http")
     
+    // Validation - Updated for Micronaut 4.x
+    implementation("io.micronaut.validation:micronaut-validation")
+    
     // Logging
     implementation("ch.qos.logback:logback-classic")
-    implementation("io.micronaut:micronaut-validation")
     
     // OpenAPI/Swagger
     implementation("io.micronaut.openapi:micronaut-openapi")
