@@ -1,0 +1,23 @@
+micronaut:
+  application:
+    name: valkey-poc-test
+  server:
+    port: -1
+  
+redis:
+  uri: ${REDIS_URI:redis://localhost:6379}
+  timeout: 5s
+  
+logging:
+  level:
+    com.example: DEBUG
+    io.lettuce: WARN
+    io.micronaut: WARN
+    org.testcontainers: WARN
+  
+# Disable tracing for tests
+micronaut:
+  tracing:
+    enabled: false
+  metrics:
+    enabled: false
