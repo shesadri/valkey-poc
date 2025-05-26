@@ -30,8 +30,8 @@ dependencies {
     implementation("io.micronaut.micrometer:micronaut-micrometer-registry-prometheus")
     implementation("io.micronaut:micronaut-management")
     
-    // Tracing
-    implementation("io.micronaut.tracing:micronaut-tracing-zipkin")
+    // Tracing - Updated for Micronaut 4.x
+    implementation("io.micronaut.tracing:micronaut-tracing-brave")
     implementation("io.micronaut.tracing:micronaut-tracing-brave-http")
     
     // Logging
