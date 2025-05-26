@@ -12,6 +12,9 @@ repositories {
 }
 
 dependencies {
+    // Micronaut BOM for version management
+    implementation(platform("io.micronaut.platform:micronaut-platform:4.4.2"))
+    
     annotationProcessor("io.micronaut:micronaut-http-validation")
     annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
     
